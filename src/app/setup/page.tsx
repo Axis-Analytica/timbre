@@ -626,7 +626,7 @@ export default function SetupPage() {
 
       if (!voiceRes.ok) throw new Error("Failed to create voice files");
 
-      router.push("/");
+      window.location.href = "/";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setSubmitting(false);
