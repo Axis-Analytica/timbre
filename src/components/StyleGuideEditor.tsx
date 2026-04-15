@@ -40,13 +40,20 @@ export default function StyleGuideEditor({ initialContent }: { initialContent: s
   const headerEnd = initialContent.indexOf("\n## ");
   const header = headerEnd > -1 ? initialContent.slice(0, headerEnd).trim() : initialContent.split("\n")[0];
 
-  const [sections, setSections] = useState(() => parseIntoSections(initialContent));
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const parsed = parseIntoSections(initialContent);
+  const hasSections = parsed.length > 0;
+
+  const [sections, setSections] = useState(() =>
+    hasSections ? parsed : [{ title: "Voice Guide", content: initialContent.replace(/^#[^\n]*\n*/, "").trim() }]
+  );
+  const [openIndex, setOpenIndex] = useState<number | null>(hasSections ? null : 0);
   const [saving, setSaving] = useState(false);
 
   async function save() {
     setSaving(true);
-    const markdown = sectionsToMarkdown(sections, header);
+    const markdown = hasSections
+      ? sectionsToMarkdown(sections, header)
+      : `${header}\n\n${sections[0].content}\n`;
     await fetch("/api/voice", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
