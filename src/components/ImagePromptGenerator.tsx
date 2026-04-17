@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Article } from "@/lib/types";
+import { motion } from "motion/react";
 
 export default function ImagePromptGenerator({
   articles,
@@ -46,10 +47,13 @@ export default function ImagePromptGenerator({
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-foreground mb-1">Image Studio</h2>
-      <p className="text-xs text-muted mb-4">Generate editorial image prompts from your articles</p>
+      <h2 className="font-serif text-2xl text-foreground mb-1">Image Studio</h2>
+      <p className="text-xs text-muted mb-5">Generate editorial image prompts from your articles</p>
 
-      <div className="bg-surface border border-border rounded-lg p-4 mb-3">
+      <div
+        className="bg-surface border border-border rounded-lg p-4 mb-3"
+        style={{ boxShadow: "var(--shadow-card)" }}
+      >
         <label className="text-[11px] uppercase tracking-widest text-muted block mb-2">
           Source article
         </label>
@@ -60,7 +64,13 @@ export default function ImagePromptGenerator({
             setPrompt("");
             onSlugChange?.(e.target.value);
           }}
-          className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:border-accent"
+          className="w-full bg-surface border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:border-accent transition-shadow duration-150"
+          onFocus={(e) => {
+            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(249, 115, 22, 0.08)";
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.boxShadow = "none";
+          }}
         >
           <option value="">Select an article...</option>
           {articles.map((a) => (
@@ -72,17 +82,21 @@ export default function ImagePromptGenerator({
       </div>
 
       {selectedSlug && !prompt && (
-        <button
+        <motion.button
+          whileTap={{ scale: 0.97 }}
           onClick={generatePrompt}
           disabled={generating}
           className="w-full py-2.5 bg-accent text-accent-foreground rounded-md text-sm font-medium mb-3 disabled:opacity-50"
         >
           {generating ? "Generating prompt..." : "Generate image prompt"}
-        </button>
+        </motion.button>
       )}
 
       {prompt && (
-        <div className="bg-surface border border-border rounded-lg p-4 mb-3">
+        <div
+          className="bg-surface border border-border rounded-lg p-4 mb-3"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
           <div className="flex justify-between items-center mb-2.5">
             <span className="text-[11px] uppercase tracking-widest text-accent">
               Generated prompt
@@ -90,7 +104,7 @@ export default function ImagePromptGenerator({
             <button
               onClick={generatePrompt}
               disabled={generating}
-              className="px-2.5 py-1 border border-border rounded text-[10px] text-muted hover:bg-surface-hover"
+              className="px-2.5 py-1 border border-border rounded text-[10px] text-muted hover:bg-surface-hover transition-colors duration-150"
             >
               Regenerate
             </button>
@@ -105,13 +119,15 @@ export default function ImagePromptGenerator({
 
       {prompt && (
         <div className="flex gap-2">
-          <button
+          <motion.button
+            whileTap={{ scale: 0.97 }}
             onClick={copyPrompt}
             className="flex-1 py-2 bg-accent text-accent-foreground rounded-md text-xs font-medium"
           >
             {copied ? "Copied!" : "Copy prompt"}
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
             onClick={async () => {
               setSendingToApi(true);
               setPreviewUrl(null);
@@ -129,14 +145,17 @@ export default function ImagePromptGenerator({
               }
             }}
             disabled={sendingToApi}
-            className="flex-1 py-2 border border-border rounded-md text-xs text-muted hover:bg-surface-hover disabled:opacity-50"
+            className="flex-1 py-2 border border-border rounded-md text-xs text-muted hover:bg-surface-hover disabled:opacity-50 transition-colors duration-150"
           >
             {sendingToApi ? "Generating image..." : "Send to API"}
-          </button>
+          </motion.button>
         </div>
       )}
       {previewUrl && (
-        <div className="mt-4 bg-surface border border-border rounded-lg p-4">
+        <div
+          className="mt-4 bg-surface border border-border rounded-lg p-4"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
           <p className="text-[11px] uppercase tracking-widest text-accent mb-2">Preview</p>
           <img
             src={previewUrl}
@@ -144,7 +163,8 @@ export default function ImagePromptGenerator({
             className="w-full rounded-md border border-border mb-3"
           />
           <div className="flex gap-2">
-            <button
+            <motion.button
+              whileTap={{ scale: 0.97 }}
               onClick={async () => {
                 setSaving(true);
                 const res = await fetch("/api/image-generate", {
@@ -168,10 +188,10 @@ export default function ImagePromptGenerator({
               className="flex-1 py-2 bg-accent text-accent-foreground rounded-md text-xs font-medium disabled:opacity-50"
             >
               {saving ? "Saving..." : "Save"}
-            </button>
+            </motion.button>
             <button
               onClick={() => setPreviewUrl(null)}
-              className="flex-1 py-2 border border-border rounded-md text-xs text-muted hover:bg-surface-hover"
+              className="flex-1 py-2 border border-border rounded-md text-xs text-muted hover:bg-surface-hover transition-colors duration-150"
             >
               Discard
             </button>

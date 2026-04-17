@@ -22,7 +22,6 @@ export default function ImagesPage() {
       setGalleryImages([]);
       return;
     }
-    // Fetch images for the selected article via the serve-image route
     fetch(`/api/article-images/${selectedSlug}`)
       .then((res) => res.json())
       .then((data) => setGalleryImages(data.images || []))
@@ -30,7 +29,7 @@ export default function ImagesPage() {
   }, [selectedSlug, galleryKey]);
 
   return (
-    <div className="p-6">
+    <div className="p-6 lg:p-8">
       <div className="flex gap-6">
         <div className="flex-1">
           <ImagePromptGenerator
@@ -46,7 +45,10 @@ export default function ImagesPage() {
             <>
               <h3 className="text-sm font-semibold text-foreground mb-3">Generated images</h3>
               <div className="grid grid-cols-2 gap-2">
-                <div className="aspect-square rounded-lg border border-dashed border-border flex items-center justify-center text-lg text-border-hover">
+                <div
+                  className="aspect-square rounded-lg border border-dashed flex items-center justify-center text-lg text-border-hover"
+                  style={{ animation: "breathing 3s ease-in-out infinite" }}
+                >
                   +
                 </div>
               </div>
