@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "motion/react";
 
 // ---------------------------------------------------------------------------
 // Theme presets
@@ -149,14 +150,13 @@ function Input({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className="w-full px-3 py-2.5 rounded-lg text-sm outline-none transition-colors"
+      className="w-full px-3 py-2.5 rounded-lg text-sm outline-none transition-all duration-150"
       style={{
         background: "#ffffff",
         border: "1px solid #e5e5e5",
         color: "#0a0a0f",
       }}
-      onFocus={(e) => (e.currentTarget.style.borderColor = "#f97316")}
-      onBlur={(e) => (e.currentTarget.style.borderColor = "#e5e5e5")}
+      {...focusGlow}
     />
   );
 }
@@ -181,15 +181,14 @@ function Textarea({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       rows={rows}
-      className="w-full px-3 py-2.5 rounded-lg text-sm outline-none transition-colors resize-none"
+      className="w-full px-3 py-2.5 rounded-lg text-sm outline-none transition-all duration-150 resize-none"
       style={{
         background: "#ffffff",
         border: "1px solid #e5e5e5",
         color: "#0a0a0f",
         lineHeight: "1.6",
       }}
-      onFocus={(e) => (e.currentTarget.style.borderColor = "#f97316")}
-      onBlur={(e) => (e.currentTarget.style.borderColor = "#e5e5e5")}
+      {...focusGlow}
     />
   );
 }
@@ -210,7 +209,7 @@ function Select({
       id={id}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full px-3 py-2.5 rounded-lg text-sm outline-none transition-colors appearance-none cursor-pointer"
+      className="w-full px-3 py-2.5 rounded-lg text-sm outline-none transition-all duration-150 appearance-none cursor-pointer"
       style={{
         background: "#ffffff",
         border: "1px solid #e5e5e5",
@@ -220,13 +219,23 @@ function Select({
         backgroundPosition: "right 12px center",
         paddingRight: "36px",
       }}
-      onFocus={(e) => (e.currentTarget.style.borderColor = "#f97316")}
-      onBlur={(e) => (e.currentTarget.style.borderColor = "#e5e5e5")}
+      {...focusGlow}
     >
       {children}
     </select>
   );
 }
+
+const focusGlow = {
+  onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    e.currentTarget.style.borderColor = "#f97316";
+    e.currentTarget.style.boxShadow = "0 0 0 3px rgba(249, 115, 22, 0.08)";
+  },
+  onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    e.currentTarget.style.borderColor = "#e5e5e5";
+    e.currentTarget.style.boxShadow = "none";
+  },
+};
 
 // ---------------------------------------------------------------------------
 // Step components
@@ -324,10 +333,11 @@ function StepPlatforms({
         {PLATFORM_OPTIONS.map((p) => {
           const checked = form.platforms.includes(p.id);
           return (
-            <button
+            <motion.button
               key={p.id}
               type="button"
               onClick={() => togglePlatform(p.id)}
+              whileTap={{ scale: 0.97 }}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm text-left transition-colors"
               style={{
                 background: checked ? "#fff7ed" : "#ffffff",
@@ -355,7 +365,7 @@ function StepPlatforms({
                 )}
               </span>
               <span className="font-medium">{p.label}</span>
-            </button>
+            </motion.button>
           );
         })}
       </div>
@@ -481,14 +491,16 @@ function StepStyle({
           {(Object.keys(themePresets) as ThemeKey[]).map((key) => {
             const selected = form.theme === key;
             return (
-              <button
+              <motion.button
                 key={key}
                 type="button"
                 onClick={() => update("theme", key)}
-                className="flex flex-col gap-2 p-2.5 rounded-xl text-left transition-all"
+                whileTap={{ scale: 0.97 }}
+                className="flex flex-col gap-2 p-2.5 rounded-xl text-left transition-all hover:-translate-y-px"
                 style={{
                   border: `2px solid ${selected ? "#f97316" : "#e5e5e5"}`,
                   background: selected ? "#fff7ed" : "#ffffff",
+                  boxShadow: "var(--shadow-card)",
                 }}
               >
                 <ThemeSwatch themeKey={key} />
@@ -500,7 +512,7 @@ function StepStyle({
                     {themeLabels[key].description}
                   </p>
                 </div>
-              </button>
+              </motion.button>
             );
           })}
         </div>
@@ -529,19 +541,39 @@ function ProgressDots({ current, total }: { current: number; total: number }) {
   return (
     <div className="flex items-center gap-1.5">
       {Array.from({ length: total }).map((_, i) => (
-        <div
+        <motion.div
           key={i}
-          className="rounded-full transition-all duration-300"
-          style={{
-            width: i === current - 1 ? "20px" : "6px",
-            height: "6px",
-            background: i < current ? "#f97316" : "#e5e5e5",
+          className="rounded-full"
+          animate={{
+            width: i === current - 1 ? 20 : 6,
+            height: 6,
+            backgroundColor: i < current ? "#f97316" : "#e5e5e5",
           }}
+          transition={{ type: "spring", stiffness: 400, damping: 25 }}
         />
       ))}
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Step transition variants
+// ---------------------------------------------------------------------------
+
+const stepVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 200 : -200,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => ({
+    x: direction > 0 ? -200 : 200,
+    opacity: 0,
+  }),
+};
 
 // ---------------------------------------------------------------------------
 // Step metadata
@@ -562,9 +594,20 @@ const STEPS = [
 export default function SetupPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(1);
   const [form, setForm] = useState<FormState>(initialForm);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function goNext() {
+    setDirection(1);
+    setStep((s) => s + 1);
+  }
+
+  function goBack() {
+    setDirection(-1);
+    setStep((s) => s - 1);
+  }
 
   function update(key: keyof FormState, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -644,7 +687,7 @@ export default function SetupPage() {
       <div className="mb-8 flex items-center gap-2.5">
         <div
           className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ background: "#f97316" }}
+          style={{ background: "#f97316", boxShadow: "var(--shadow-accent-soft)" }}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
@@ -655,14 +698,14 @@ export default function SetupPage() {
             />
           </svg>
         </div>
-        <span className="text-lg font-semibold tracking-tight" style={{ color: "#0a0a0f" }}>
+        <span className="text-xl font-serif" style={{ color: "#0a0a0f" }}>
           Timbre
         </span>
       </div>
 
       {/* Card */}
       <div
-        className="w-full max-w-xl rounded-2xl px-8 py-8"
+        className="w-full max-w-xl rounded-2xl px-8 py-8 overflow-hidden"
         style={{
           background: "#ffffff",
           border: "1px solid #e5e5e5",
@@ -677,7 +720,7 @@ export default function SetupPage() {
               {step} of {TOTAL_STEPS}
             </span>
           </div>
-          <h1 className="text-xl font-semibold mb-1" style={{ color: "#0a0a0f" }}>
+          <h1 className="text-xl font-serif mb-1" style={{ color: "#0a0a0f" }}>
             {meta.title}
           </h1>
           <p className="text-sm" style={{ color: "#737373" }}>
@@ -686,12 +729,24 @@ export default function SetupPage() {
         </div>
 
         {/* Step content */}
-        <div className="mb-8">
-          {step === 1 && <StepProfile form={form} update={update} />}
-          {step === 2 && <StepVoice form={form} update={update} />}
-          {step === 3 && <StepPlatforms form={form} togglePlatform={togglePlatform} />}
-          {step === 4 && <StepAI form={form} update={update} />}
-          {step === 5 && <StepStyle form={form} update={update} />}
+        <div className="mb-8 relative">
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={step}
+              custom={direction}
+              variants={stepVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.2, ease: "easeOut" as const }}
+            >
+              {step === 1 && <StepProfile form={form} update={update} />}
+              {step === 2 && <StepVoice form={form} update={update} />}
+              {step === 3 && <StepPlatforms form={form} togglePlatform={togglePlatform} />}
+              {step === 4 && <StepAI form={form} update={update} />}
+              {step === 5 && <StepStyle form={form} update={update} />}
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* Error */}
@@ -708,7 +763,7 @@ export default function SetupPage() {
         <div className="flex items-center justify-between">
           <button
             type="button"
-            onClick={() => setStep((s) => s - 1)}
+            onClick={goBack}
             className="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
             style={{
               color: step === 1 ? "transparent" : "#737373",
@@ -720,11 +775,12 @@ export default function SetupPage() {
           </button>
 
           {step < TOTAL_STEPS ? (
-            <button
+            <motion.button
               type="button"
-              onClick={() => setStep((s) => s + 1)}
+              onClick={goNext}
               disabled={!canAdvance()}
-              className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              whileTap={{ scale: 0.97 }}
+              className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed hover:-translate-y-px"
               style={{
                 background: "#f97316",
                 color: "#ffffff",
@@ -737,13 +793,14 @@ export default function SetupPage() {
               }}
             >
               Next
-            </button>
+            </motion.button>
           ) : (
-            <button
+            <motion.button
               type="button"
               onClick={handleLaunch}
               disabled={submitting}
-              className="px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+              whileTap={{ scale: 0.97 }}
+              className="relative px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2 overflow-hidden hover:-translate-y-px"
               style={{
                 background: "#f97316",
                 color: "#ffffff",
@@ -755,6 +812,16 @@ export default function SetupPage() {
                 e.currentTarget.style.background = "#f97316";
               }}
             >
+              {!submitting && (
+                <span
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.3) 45%, rgba(255,255,255,0.3) 55%, transparent 60%)",
+                    transform: "translateX(-100%)",
+                    animation: "shimmer 2.5s ease-in-out infinite",
+                  }}
+                />
+              )}
               {submitting ? (
                 <>
                   <svg
@@ -783,7 +850,7 @@ export default function SetupPage() {
               ) : (
                 "Launch Timbre"
               )}
-            </button>
+            </motion.button>
           )}
         </div>
       </div>
