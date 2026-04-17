@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Article } from "@/lib/types";
+import { motion } from "motion/react";
 
 export default function VoiceFeedback({ article }: { article: Article }) {
   const [note, setNote] = useState("");
@@ -32,24 +33,32 @@ export default function VoiceFeedback({ article }: { article: Article }) {
         value={note}
         onChange={(e) => setNote(e.target.value)}
         placeholder="What worked or didn't? (optional)"
-        className="w-full bg-surface-hover border border-border rounded px-2.5 py-1.5 text-xs text-foreground mb-2 focus:outline-none focus:border-accent"
+        className="w-full bg-surface-hover border border-border rounded px-2.5 py-1.5 text-xs text-foreground mb-2 focus:outline-none focus:border-accent transition-shadow duration-150"
+        onFocus={(e) => {
+          e.currentTarget.style.boxShadow = "0 0 0 3px rgba(249, 115, 22, 0.08)";
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.boxShadow = "none";
+        }}
       />
       {submitted ? (
         <p className="text-xs text-success text-center py-1.5">Logged. Thanks.</p>
       ) : (
         <div className="flex gap-1.5">
-          <button
+          <motion.button
+            whileTap={{ scale: 0.95 }}
             onClick={() => submit("positive")}
-            className="flex-1 py-1.5 text-center border border-border rounded text-xs text-success hover:bg-success/5"
+            className="flex-1 py-1.5 text-center border border-border rounded text-xs text-success hover:bg-success/5 transition-colors duration-150"
           >
             Sounds like me
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
             onClick={() => submit("negative")}
-            className="flex-1 py-1.5 text-center border border-border rounded text-xs text-draft hover:bg-draft/5"
+            className="flex-1 py-1.5 text-center border border-border rounded text-xs text-draft hover:bg-draft/5 transition-colors duration-150"
           >
             Not quite
-          </button>
+          </motion.button>
         </div>
       )}
     </div>

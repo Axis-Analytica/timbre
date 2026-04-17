@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Article } from "@/lib/types";
 import { useConfig } from "@/components/ConfigProvider";
+import { motion } from "motion/react";
 
 type PreviewMode = "linkedin" | "substack" | "markdown";
 
@@ -42,19 +43,27 @@ export default function PlatformPreview({
             <button
               key={m}
               onClick={() => setMode(m)}
-              className={`flex-1 py-1.5 text-center rounded text-xs capitalize ${
-                mode === m
-                  ? "bg-surface-hover border border-border text-foreground font-medium"
-                  : "text-muted"
+              className={`relative flex-1 py-1.5 text-center rounded text-xs capitalize transition-colors duration-150 ${
+                mode === m ? "text-foreground font-medium" : "text-muted hover:text-foreground"
               }`}
             >
               {m}
+              {mode === m && (
+                <motion.div
+                  layoutId="preview-tab-indicator"
+                  className="absolute bottom-0 left-1 right-1 h-0.5 bg-accent rounded-full"
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="flex-1 p-3 overflow-y-auto">
+      <div
+        className="flex-1 p-3 overflow-y-auto"
+        style={{ boxShadow: "inset 0 2px 4px rgba(0, 0, 0, 0.03)" }}
+      >
         {mode === "linkedin" && (
           <div className="border border-border rounded-lg p-3 bg-surface-hover">
             <div className="flex gap-2 mb-2.5 items-center">
@@ -93,17 +102,24 @@ export default function PlatformPreview({
       </div>
 
       <div className="p-3 space-y-1.5">
-        <button
+        <motion.button
+          whileTap={{ scale: 0.97 }}
           onClick={() =>
-            copyToClipboard(mode === "linkedin" ? getLinkedInText() : mode === "substack" ? getSubstackText() : content)
+            copyToClipboard(
+              mode === "linkedin"
+                ? getLinkedInText()
+                : mode === "substack"
+                  ? getSubstackText()
+                  : content
+            )
           }
           className="w-full py-2 bg-accent rounded-md text-xs text-accent-foreground font-medium"
         >
           {copied ? "Copied!" : `Copy for ${mode}`}
-        </button>
+        </motion.button>
         <button
           onClick={() => copyToClipboard(content)}
-          className="w-full py-2 border border-border rounded-md text-xs text-muted"
+          className="w-full py-2 border border-border rounded-md text-xs text-muted hover:bg-surface-hover transition-colors duration-150"
         >
           Copy raw markdown
         </button>
