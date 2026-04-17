@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { listArticles } from "@/lib/content";
+import { StaggerGroup, StaggerItem } from "@/components/motion/Stagger";
 
 export const dynamic = "force-dynamic";
 
@@ -33,43 +34,45 @@ export default async function WritingPage({
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-semibold text-foreground">All Writing</h1>
+    <div className="p-6 lg:p-8">
+      <div className="flex justify-between items-center mb-5">
+        <h1 className="font-serif text-2xl text-foreground">All Writing</h1>
         <span className="text-sm text-muted">{articles.length} pieces</span>
       </div>
 
-      <div className="space-y-2">
+      <StaggerGroup className="space-y-2">
         {articles.map((article) => (
-          <Link
-            key={article.slug}
-            href={`/write/${article.slug}`}
-            className="flex items-center justify-between bg-surface border border-border rounded-lg p-4 hover:border-border-hover transition-colors"
-          >
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                {article.frontmatter.title}
-              </p>
-              <p className="text-xs text-muted mt-1">
-                {article.frontmatter.platform} · {article.frontmatter.updated}
-                {article.frontmatter.tags.length > 0 &&
-                  ` · ${article.frontmatter.tags.join(", ")}`}
-              </p>
-            </div>
-            <span
-              className={`text-xs px-2 py-1 rounded-full ${statusBadge[article.frontmatter.status] || ""}`}
+          <StaggerItem key={article.slug}>
+            <Link
+              href={`/write/${article.slug}`}
+              className="flex items-center justify-between bg-surface border border-border rounded-lg p-4 transition-all duration-150 hover:border-border-hover hover:-translate-y-px"
+              style={{ boxShadow: "var(--shadow-card)" }}
             >
-              {article.frontmatter.status}
-            </span>
-          </Link>
+              <div>
+                <p className="text-sm font-medium text-foreground">
+                  {article.frontmatter.title}
+                </p>
+                <p className="text-xs text-muted mt-1">
+                  {article.frontmatter.platform} · {article.frontmatter.updated}
+                  {article.frontmatter.tags.length > 0 &&
+                    ` · ${article.frontmatter.tags.join(", ")}`}
+                </p>
+              </div>
+              <span
+                className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusBadge[article.frontmatter.status] || ""}`}
+              >
+                {article.frontmatter.status}
+              </span>
+            </Link>
+          </StaggerItem>
         ))}
+      </StaggerGroup>
 
-        {articles.length === 0 && (
-          <p className="text-sm text-muted text-center py-12">
-            No writing yet. Click &quot;+ New Piece&quot; to start.
-          </p>
-        )}
-      </div>
+      {articles.length === 0 && (
+        <p className="text-sm text-muted text-center py-12">
+          No writing yet. Click &quot;+ New Piece&quot; to start.
+        </p>
+      )}
     </div>
   );
 }

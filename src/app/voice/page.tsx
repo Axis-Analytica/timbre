@@ -9,7 +9,7 @@ export default function VoicePage() {
   const corrections = getCorrections();
 
   return (
-    <div className="p-6">
+    <div className="p-6 lg:p-8">
       <div className="flex gap-6">
         <div className="flex-1">
           <StyleGuideEditor initialContent={styleGuide} />
