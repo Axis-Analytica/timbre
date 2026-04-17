@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useConfig } from "@/components/ConfigProvider";
+import Icon from "@/components/Icon";
 import { motion } from "motion/react";
 
 const views = [
@@ -36,10 +37,9 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
       <aside className="w-14 bg-surface border-r border-border flex flex-col items-center py-4 gap-4 shrink-0">
         <Link
           href="/"
-          className="w-8 h-8 bg-accent rounded-md flex items-center justify-center text-accent-foreground text-sm font-bold"
-          style={{ boxShadow: "var(--shadow-accent-soft)" }}
+          style={{ boxShadow: "var(--shadow-accent-soft)", borderRadius: 8 }}
         >
-          T
+          <Icon size={32} />
         </Link>
         <div className="w-px h-4 bg-border" />
         {views.map((v) => (
@@ -61,10 +61,11 @@ export default function Sidebar({ collapsed = false }: { collapsed?: boolean }) 
 
   return (
     <aside className="w-56 bg-surface border-r border-border p-4 shrink-0 flex flex-col">
-      <div className="mb-1">
+      <div className="flex items-center gap-2.5 mb-1">
+        <Icon size={32} />
         <span className="text-xl text-foreground font-serif">Timbre</span>
       </div>
-      <p className="text-[11px] text-muted mb-4" style={{ letterSpacing: "0.02em" }}>
+      <p className="text-[11px] text-muted mb-4 pl-[42px]" style={{ letterSpacing: "0.02em" }}>
         by {config.brand}
       </p>
 

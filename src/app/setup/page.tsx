@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
+import Icon from "@/components/Icon";
 
 // ---------------------------------------------------------------------------
 // Theme presets
@@ -685,19 +686,7 @@ export default function SetupPage() {
     >
       {/* Logo / wordmark */}
       <div className="mb-8 flex items-center gap-2.5">
-        <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center"
-          style={{ background: "#f97316", boxShadow: "var(--shadow-accent-soft)" }}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path
-              d="M3 4h10M3 8h7M3 12h5"
-              stroke="#ffffff"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            />
-          </svg>
-        </div>
+        <Icon size={32} />
         <span className="text-xl font-serif" style={{ color: "#0a0a0f" }}>
           Timbre
         </span>
