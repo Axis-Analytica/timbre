@@ -11,9 +11,9 @@ export default function PipelinePage() {
   const articles = listArticles();
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-semibold text-foreground">Pipeline</h1>
+    <div className="p-6 lg:p-8">
+      <div className="flex justify-between items-center mb-5">
+        <h1 className="font-serif text-2xl text-foreground">Pipeline</h1>
       </div>
       <PipelineBoard initialArticles={articles} />
     </div>
